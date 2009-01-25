@@ -9,8 +9,12 @@ public class DatabaseHelper extends SQLiteOpenHelper {
 
 	private String createTable;
 	private String TAG ;
-	DatabaseHelper(Context context ,String databaseName ,int databaseVersion,String createTable,String TAG) {
+	private String databaseName;
+	private String databaseTable;
+	DatabaseHelper(Context context ,String databaseName ,int databaseVersion,String databaseTable,String createTable,String TAG) {
     	super(context, databaseName, null, databaseVersion);
+    	this.databaseName = databaseName;
+    	this.databaseTable = databaseTable;
     	this.createTable = createTable;
     	this.TAG = TAG;
     }
@@ -23,8 +27,9 @@ public class DatabaseHelper extends SQLiteOpenHelper {
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
         Log.w(TAG, "Upgrading database from version " + oldVersion + " to "
-                + newVersion + ", which will destroy all old data");
-        db.execSQL("DROP TABLE IF EXISTS notes");
+                + newVersion + ", which will destroy all old data "+databaseTable);
+        db.execSQL("DROP TABLE IF EXISTS "+databaseTable);
         onCreate(db);
     }
 }
+//01-25 17:14:25.904: ERROR/AndroidRuntime(20836): Caused by: android.database.sqlite.SQLiteException: near "set": syntax error: , while compiling: SELECT _id, expression, value, set FROM aMath
