@@ -25,8 +25,7 @@ public class ExpressionsDbAdapter {
     private static final String CREATE_TABLE =
         "create table "+ DATABASE_TABLE +" ("+ KEY_ROWID +" integer primary key autoincrement, "
                 + KEY_EXPRESSION +" text not null, "+ KEY_VALUE +" text not null,"+KEY_SAVED+" text not null);";
-    //01-25 17:18:43.964: ERROR/Database(22576): Failure 1 (near "set": syntax error) on 0x1aae10 when preparing 'create table aMath (_id integer primary key autoincrement, expression text not null, value text not null,set text not null);'.
-
+    
     public ExpressionsDbAdapter(Context ctx) {
         this.context = ctx;
     }
@@ -45,11 +44,7 @@ public class ExpressionsDbAdapter {
         ContentValues initialValues = new ContentValues();
         initialValues.put(KEY_EXPRESSION, expression);
         initialValues.put(KEY_VALUE, value);
-        if(set != null){
-        	initialValues.put(KEY_SAVED, set);
-        }else{
-        	initialValues.put(KEY_SAVED, "previous");
-        }
+        initialValues.put(KEY_SAVED, set);
 
         return database.insert(DATABASE_TABLE, null, initialValues);
     }
@@ -63,6 +58,10 @@ public class ExpressionsDbAdapter {
     	return database.delete(DATABASE_TABLE, null, null) > 0;
     }
     
+    public boolean deleteSession(String session){
+    	return database.delete(DATABASE_TABLE, KEY_SAVED + "='" + session+"'", null) > 0;
+    }
+ 
     
     public Cursor fetchAll() {
 
@@ -70,7 +69,13 @@ public class ExpressionsDbAdapter {
                 KEY_VALUE,KEY_SAVED}, null, null, null, null, null);
     }
 
+    public Cursor fetchSession(String s) {
 
+        return database.query(DATABASE_TABLE, new String[] {KEY_ROWID, KEY_EXPRESSION,
+                KEY_VALUE,KEY_SAVED}, KEY_SAVED+"='"+s+"'", null, null, null, null);
+    }
+    
+    
     public Cursor fetch(long rowId) throws SQLException {
 
         Cursor cursor = database.query(true, DATABASE_TABLE, new String[] {KEY_ROWID,
